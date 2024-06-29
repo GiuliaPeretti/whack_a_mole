@@ -79,29 +79,48 @@ def gen_mole():
         col=random.randint(0,size-1)
     draw_cell(row,col,COLORS[difficulty-1])
     cells[row][col]['difficulty']=difficulty
-    cells[row][col]['count']=60-difficulty*10
-    print(np.array(cells))
+    cells[row][col]['count']=(6-difficulty)*30
+    # print(np.array(cells))
 
 def cells_with_moles():
     moles=[]
     for row in range(len(cells)):
         for col in range(len(cells[row])):
-            if cells[row][col]!=0:
+            if cells[row][col]['difficulty']!=0:
                 moles.append([row,col])
     return(moles)
 
 def handle_cell_input(row, col):
+    global score
+    print(row,col)
+    
     if cells[row][col]!=0:
-        cells[row][col]=0
+        draw_cell(row, col, BLACK)
+        print(cells[row][col]['difficulty'])
+        cells[row][col]['difficulty'] = 0
+        print(cells[row][col]['difficulty'])
+        cells[row][col]['count'] = 0
         score+=1
+        print(np.array(cells))
 
 def display_score():
+    pygame.draw.rect(screen, BLACK, (620,295,200,40))
     font = pygame.font.SysFont('arial', 30)
     text=font.render('Scores: '+str(score), True, RED)
     screen.blit(text, (630,300))
 
+def delete_cell(row,col):
+    draw_cell(row, col, BLACK)
+    cells[row][col]['difficulty'] = 0
+    cells[row][col]['count'] = 0
 
-
+def color_map():
+    x,y,w,h=650,350,20,20
+    for i in range (0, len(COLORS)):
+        pygame.draw.rect(screen, COLORS[i], (x,y,w,h))
+        text=font.render(' = '+str(5-i)+' s', True, WHITE)
+        screen.blit(text, (x+20,y))
+        y=y+h+10
 
 
 if __name__=='__main__':
@@ -125,6 +144,8 @@ if __name__=='__main__':
     draw_buttons()
     cells=init_cell()
     display_score()
+    color_map()
+
 
     while run:
         for event in pygame.event.get():
@@ -136,6 +157,7 @@ if __name__=='__main__':
                     col=(x-20)//cell_width
                     row=(y-20)//cell_width
                     handle_cell_input(row,col)
+                    display_score()
                 else:
                     for i in range (len(buttons)):
                         if(x>=buttons[i]['coordinates'][0] and x<=buttons[i]['coordinates'][0]+buttons[i]['coordinates'][2] and y>=buttons[i]['coordinates'][1] and y<=buttons[i]['coordinates'][1]+buttons[i]['coordinates'][3]):
@@ -145,37 +167,45 @@ if __name__=='__main__':
                                 draw_background()
                                 draw_buttons()
                                 cell_width, size=get_cell_size()
-                                print(cell_width, size)
                                 cells=init_cell()
-                                print(np.array(cells))
                                 draw_grid()
-                                
+                                display_score()
+                                color_map()
                                 break
                             elif(i==5):
                                 print("start")
-                                print(selected)
                                 draw_buttons()
                                 if game_started==False:
                                     selected_game=selected
                                     game_started=True
+                                score=0
+                                gen_mole()
+                                gen_mole()
+                                gen_mole()
+                                print(np.array(cells))
                             elif(i==6):
                                 print("stop")
                                 draw_buttons()
-
                                 game_started=False
                     else:
                         selected=-1
                         draw_buttons()
 
-        valid=cells_with_moles()
-        for i in range(len(valid)):
-            cells[valid[i][0]][valid[i][1]]['count']+=1
+        if game_started:           
+            valid=cells_with_moles()
+            for i in range(len(valid)):
+                if cells[valid[i][0]][valid[i][1]]['count']!=0:
+                    cells[valid[i][0]][valid[i][1]]['count']-=1
+                if cells[valid[i][0]][valid[i][1]]['difficulty']!=0 and cells[valid[i][0]][valid[i][1]]['count']==0:
+                    score-=1
+                    delete_cell(valid[i][0],valid[i][1])
+                    display_score()
+            if len(valid)<3:
+                gen_mole()
             
+
+
         pygame.display.flip()
         clock.tick(30)
 
-    
-    
-    
-    
     pygame.quit()
