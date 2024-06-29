@@ -12,6 +12,6 @@ WHITE=(255,255,255)
 
 
 BACKGROUND_COLOR = BLACK
-COLORS=[()]
+COLORS=[(20, 199, 0), (217, 217, 20), (224, 136, 2),(194, 24, 2),(194, 2, 92)]
 
 flags=(pygame.HWSURFACE | pygame.DOUBLEBUF)
