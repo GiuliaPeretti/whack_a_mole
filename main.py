@@ -22,8 +22,6 @@ def draw_grid():
         pygame.draw.line(screen, DARK_GRAY, (i,20),(i,580), 1)
         pygame.draw.line(screen, DARK_GRAY, (20,i),(580,i), 1)
 
-    for i in range(len(COLORS)):
-        pygame.draw.rect(screen, COLORS[i], (10*i,0,10,10))
 
 def gen_buttons():
     x,y,w,h=640,20,100,30
@@ -80,7 +78,6 @@ def gen_mole():
     draw_cell(row,col,COLORS[difficulty-1])
     cells[row][col]['difficulty']=difficulty
     cells[row][col]['count']=(6-difficulty)*30
-    # print(np.array(cells))
 
 def cells_with_moles():
     moles=[]
@@ -92,21 +89,17 @@ def cells_with_moles():
 
 def handle_cell_input(row, col):
     global score
-    print(row,col)
     
-    if cells[row][col]!=0:
+    if cells[row][col]['difficulty']!=0:
         draw_cell(row, col, BLACK)
-        print(cells[row][col]['difficulty'])
         cells[row][col]['difficulty'] = 0
-        print(cells[row][col]['difficulty'])
         cells[row][col]['count'] = 0
         score+=1
-        print(np.array(cells))
 
 def display_score():
     pygame.draw.rect(screen, BLACK, (620,295,200,40))
     font = pygame.font.SysFont('arial', 30)
-    text=font.render('Scores: '+str(score), True, RED)
+    text=font.render('Score: '+str(score), True, RED)
     screen.blit(text, (630,300))
 
 def delete_cell(row,col):
@@ -173,7 +166,6 @@ if __name__=='__main__':
                                 color_map()
                                 break
                             elif(i==5):
-                                print("start")
                                 draw_buttons()
                                 if game_started==False:
                                     selected_game=selected
@@ -182,9 +174,7 @@ if __name__=='__main__':
                                 gen_mole()
                                 gen_mole()
                                 gen_mole()
-                                print(np.array(cells))
                             elif(i==6):
-                                print("stop")
                                 draw_buttons()
                                 game_started=False
                     else:
